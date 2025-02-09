@@ -34,8 +34,8 @@ class GeoCodeServiceTest {
 
 
 	@Test
-	void getCoordinates_ValidCity_ReturnsGeoCoordinates() {
-		// Arrange
+	void getCoordinatesValidCityReturnsGeoCoordinates() {
+
 		String cityName = "TestCity";
 		String expectedUrl = "https://example.com/geocode?cityName=TestCity";
 		geoCodeService.setAPI_GEO(API_GEO);
@@ -56,8 +56,8 @@ class GeoCodeServiceTest {
 	}
 
 	@Test
-	void getCoordinates_Error() {
-		// Arrange
+	void getCoordinatesError() {
+
 		String cityName = "ErrorCity";
 		String expectedUrl = "https://example.com/geocode?cityName=ErrorCity";
 		geoCodeService.setAPI_GEO(API_GEO);

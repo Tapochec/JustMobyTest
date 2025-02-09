@@ -5,6 +5,8 @@ import com.example.justmobytest.Entity.Weather;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -12,8 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.MessageFormat;
+
+
 @Service
 public class WeatherService {
+
+    public static final Logger LOG = LoggerFactory.getLogger(WeatherService.class);
 
     @Value("${api.url}")
     private String API_URL;
@@ -31,11 +38,15 @@ public class WeatherService {
     public Weather getWeather(String cityName) {
         GeoCoordinates geoCoordinates = geoCodeService.getCoordinates(cityName);
         if (geoCoordinates == null) {
-            System.out.println("Координаты не получены");
+
+            LOG.info("No coordinates found for the city " + cityName);
+
             return null;
         }
-        String url = API_URL.replace("{LAT}", String.valueOf(geoCoordinates.getLat()))
-                .replace("{LON}", String.valueOf(geoCoordinates.getLon()));
+        String url = buildWeatherUrl(geoCoordinates.getLat(), geoCoordinates.getLon());
+
+        LOG.info("Coordinates for the city " + cityName + ": Lat: " + geoCoordinates.getLat() + ", Lon: " + geoCoordinates.getLon());
+
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -46,10 +57,15 @@ public class WeatherService {
 
 
                 int temp = main.get("temp").asInt();
-                int temp_min = main.get("temp_min").asInt();
-                int temp_max = main.get("temp_max").asInt();
+                int tempMin = main.get("temp_min").asInt();
+                int tempMax = main.get("temp_max").asInt();
 
-                return new Weather( Math.round(temp),  Math.round(temp_min), Math.round(temp_max));
+                LOG.info("Weather request for " + cityName + " city successful \n" +
+                        "temp = " + temp + "\n" +
+                        "tempMin = " + tempMin + "\n" +
+                        "tempMax = " + tempMax);
+
+                return new Weather(Math.round(temp),  Math.round(tempMin), Math.round(tempMax));
 
             } else {
                 throw new RuntimeException(String.valueOf(response.getStatusCode()));
@@ -58,6 +74,10 @@ public class WeatherService {
             throw new RuntimeException(e.getMessage());
         }
 
+    }
+
+    private String buildWeatherUrl(double lat, double lon) {
+        return MessageFormat.format(API_URL, lat, lon);
     }
 
 

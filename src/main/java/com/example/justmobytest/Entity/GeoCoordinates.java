@@ -4,21 +4,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class GeoCoordinates {
     @JsonProperty
-    public long lat;
+    public double lat;
     @JsonProperty
-    public long lon;
+    public double lon;
 
-    public GeoCoordinates(long lat, long lon) {
+    public GeoCoordinates(double lat, double lon) {
         this.lat = lat;
         this.lon = lon;
     }
 
-    public long getLat() {
+    public double getLat() {
         return lat;
     }
 
 
-    public long getLon() {
+    public double getLon() {
         return lon;
     }
 
