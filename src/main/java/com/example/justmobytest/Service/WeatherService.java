@@ -38,11 +38,9 @@ public class WeatherService {
     public Weather getWeather(String cityName) {
         GeoCoordinates geoCoordinates = geoCodeService.getCoordinates(cityName);
         if (geoCoordinates == null) {
-
-            LOG.info("No coordinates found for the city " + cityName);
-
-            return null;
+            throw new RuntimeException("Координаты города не найдены");
         }
+
         String url = buildWeatherUrl(geoCoordinates.getLat(), geoCoordinates.getLon());
 
         LOG.info("Coordinates for the city " + cityName + ": Lat: " + geoCoordinates.getLat() + ", Lon: " + geoCoordinates.getLon());

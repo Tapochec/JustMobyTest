@@ -1,6 +1,8 @@
 package com.example.justmobytest.Service;
 
 import com.example.justmobytest.Entity.GeoCoordinates;
+import com.example.justmobytest.Exception.InvalidCityNameException;
+import com.example.justmobytest.Exception.InvalidNetworkException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,9 +47,9 @@ public class GeoCodeService {
                 JsonNode firstCity = root.get(0);
 
                 if (firstCity == null) {
-                    String errorMessage = String.format("Не удалось найти координаты для города " + cityName + ". Проверьте правильность написания названия города.");
-                    LOG.warn(errorMessage + " Response: {}", response.getBody());
-                    throw new IllegalArgumentException(errorMessage);
+                    String errorMessage = String.format("Не удалось найти координаты для города '%s'. Проверьте правильность написания названия города.", cityName);
+                    LOG.error(errorMessage + " Response: {}", response.getBody());
+                    throw new InvalidCityNameException(errorMessage);
                 }
 
                 double lat = firstCity.get("lat").asDouble();
@@ -55,16 +57,16 @@ public class GeoCodeService {
 
                 LOG.info("Coordinates for the city " + cityName + ": Lat: " + firstCity.get("lat").asDouble() + ", Lon: " + firstCity.get("lon").asDouble());
 
-
                 return new GeoCoordinates(lat, lon);
 
             } else {
-                LOG.info("No coordinates found for the city " + cityName);
-                throw new RuntimeException(String.valueOf(response.getStatusCode()));
+                String errorMessage = String.format("Не удалось найти координаты для города '%s'. Проверьте правильность написания названия города.", cityName);
+                LOG.error(errorMessage + " Response: {}", response.getBody());
+                throw new InvalidCityNameException(errorMessage);
             }
         } catch (RestClientException | JsonProcessingException e) {
             LOG.error("Error network while getting coordinates for city {}: {}", cityName, e.getMessage(), e);
-            throw new RuntimeException("Ошибка сети при получении координат города " + cityName, e);
+            throw new InvalidNetworkException("Ошибка сети");
         }
     }
 
