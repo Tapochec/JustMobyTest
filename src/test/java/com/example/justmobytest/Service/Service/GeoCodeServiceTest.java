@@ -1,6 +1,6 @@
-package com.example.justmobytest.Service;
+package com.example.justmobytest.Service.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.example.justmobytest.Service.GeoCodeService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -65,8 +65,7 @@ class GeoCodeServiceTest {
 		ResponseEntity<String> responseEntity = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
 		//when
-		when(restTemplate.getForEntity(expectedUrl, String.class))
-				.thenReturn(responseEntity);
+		when(restTemplate.getForEntity(expectedUrl, String.class)).thenReturn(responseEntity);
 
 		//then
 		RuntimeException exception = assertThrows(RuntimeException.class, () -> geoCodeService.getCoordinates(cityName));

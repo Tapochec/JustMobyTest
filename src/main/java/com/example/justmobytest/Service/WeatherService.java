@@ -78,5 +78,4 @@ public class WeatherService {
         return MessageFormat.format(API_URL, lat, lon);
     }
 
-
 }
